@@ -10,7 +10,7 @@ const body = {
     "CRUD": "R"
 };
 
-function stuff(cb) {
+function getMatchRecords(cb) {
     const options = {
         host: "vblcb.wisseq.eu",
         port: 80,
@@ -96,7 +96,7 @@ function log(record, text) {
 }
 
 getPlayers(playerData => {
-    stuff(records => {
+    getMatchRecords(records => {
         records.forEach(record => {
             const playerName = record.playerNumber ? playerData[record.homeOrAway + 'Players'].filter(pd => pd.number === record.playerNumber)[0].name : '';
 
