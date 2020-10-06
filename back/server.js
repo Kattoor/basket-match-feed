@@ -38,9 +38,13 @@ function getMatchRecords(cb) {
                         case 10: // score
                             const textSplit = record['Text'].split(' ');
                             const pointsMade = textSplit[0];
-                            const newScore = textSplit[1];
+                            const scoreString = textSplit[1];
+                            const score = {
+                                home: scoreString.slice(1, scoreString.indexOf('-')),
+                                away: scoreString.slice(scoreString.indexOf('-') + 1, scoreString.length - 1)
+                            };
 
-                            return {type, period, minute, playerNumber, pointsMade, newScore, homeOrAway};
+                            return {type, period, minute, playerNumber, pointsMade, score, homeOrAway};
                         case 20: // timeout
                             return {type, period, minute, homeOrAway};
                         case 30: // fault
@@ -116,7 +120,7 @@ getPlayers(playerData => {
 
         http.createServer((req, res) => {
             res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
-            res.write(JSON.stringify(enrichedData));
+            res.write(JSON.stringify({playerData, records: enrichedData}));
             res.end();
         }).listen(8080, () => console.log('Started server'));
     });

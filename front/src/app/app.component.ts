@@ -8,23 +8,49 @@ import {BackendService} from './backend.service';
 })
 export class AppComponent {
   title = 'basket-match-feed';
-  homePlayersOnField = [];
-  awayPlayersOnField = [];
-  currentScore = [];
+  homePlayers = [];
+  awayPlayers = [];
+  score: string;
+  period: string;
+  minute: string;
 
   constructor(private backendService: BackendService) {
     this.backendService.getData()
-      .subscribe((data: any[]) => {
-        data.forEach(record => {
+      .subscribe((data: any) => {
+        const playerData = data.playerData;
+        const records = data.records;
+
+        this.homePlayers = playerData.homePlayers;
+        this.awayPlayers = playerData.awayPlayers;
+
+        records.forEach(record => {
           if (record.type === 50) {
-            const playersArray = this[record.homeOrAway + 'PlayersOnField'];
-            if (record.inOrOut === 'in') {
-              playersArray.push(record.playerName);
-              console.log(this.homePlayersOnField);
-            } else {
-              playersArray.splice(playersArray.findIndex(player => player === record.playerName), 1);
-            }
+            const playersArray = this[record.homeOrAway + 'Players'];
+            const player = playersArray.filter(p => p.name === record.playerName)[0];
+
+            player.onField = record.inOrOut === 'in';
           }
+
+          if (record.type === 10) {
+            this.score = record.score.home + ' - ' + record.score.away;
+          }
+
+          if (record.type === 40) {
+            this.period = record.period;
+          }
+
+          if (record.type === 30) {
+            const playersArray = this[record.homeOrAway + 'Players'];
+            const player = playersArray.filter(p => p.number === record.playerNumber)[0];
+
+            if (player.fault === undefined) {
+              player.fault = 0;
+            }
+
+            player.fault++;
+          }
+
+          this.minute = record.minute;
         });
       });
   }

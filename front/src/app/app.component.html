@@ -1,19 +1,66 @@
-<div style="width: 100vw; display: flex; justify-content: space-around; font-family: sans-serif; text-transform: uppercase">
-  <div>
-    <h2>HOME</h2>
-    <p *ngFor="let player of homePlayersOnField">
-      {{player}}
-    </p>
+<style>
+  .column {
+    background-color: #ecf0f1;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-around;
+    font-family: sans-serif;
+    text-transform: uppercase;
+  }
+</style>
+
+<div class="column">
+  <div style="height: 20%;"></div>
+  <div style="height: 60%" class="row">
+    <div>
+      <h1 style="text-align: center">HOME</h1>
+      <div style="display: flex;">
+        <div style="margin-right: 25px;">
+          <h2>BANK</h2>
+          <p *ngFor="let player of homePlayers | playerOnField : false">
+            {{player.name}} ({{player.fault || 0}})
+          </p>
+        </div>
+        <div>
+          <h2>VELD</h2>
+          <p *ngFor="let player of homePlayers | playerOnField : true">
+            {{player.name}} ({{player.fault || 0}})
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; padding-top: 5%;">
+      <div>
+        <p style="margin: 5px;">PERIOD: {{period}}</p>
+        <p style="margin: 5px;">MINUTE: {{minute}}</p>
+      </div>
+      <h1 style="font-size: 3em">{{score}}</h1>
+    </div>
+
+    <div>
+      <h1 style="text-align: center">AWAY</h1>
+      <div style="display: flex; text-align: right">
+        <div>
+          <h2>VELD</h2>
+          <p *ngFor="let player of awayPlayers | playerOnField : true">
+            {{player.name}} ({{player.fault || 0}})
+          </p>
+        </div>
+        <div style="margin-left: 25px;">
+          <h2>BANK</h2>
+          <p *ngFor="let player of awayPlayers | playerOnField : false">
+            {{player.name}} ({{player.fault || 0}})
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <h2>AWAY</h2>
-    <p *ngFor="let player of awayPlayersOnField">
-      {{player}}
-    </p>
-  </div>
+  <div style="height: 20%;"></div>
 </div>
-
-
-
-
-{{awayPlayersOnField}}
