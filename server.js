@@ -46,7 +46,7 @@ function getMatchRecords(cb) {
                         case 30: // fault
                             return {type, period, minute, playerNumber, homeOrAway};
                         case 40: // period start
-                            return {type, period, minute, homeOrAway};
+                            return {type, period, minute};
                         case 50: // in or out
                             return {type, period, minute, playerNumber, homeOrAway, inOrOut: record['Text']};
                     }
@@ -95,32 +95,29 @@ function log(record, text) {
     console.log(`${record.homeOrAway.toUpperCase()}\t${time} min\t${text}`);
 }
 
-getPlayers(playerData => {
-    getMatchRecords(records => {
-        records.forEach(record => {
+function enrich(records, playerData) {
+    return records.map(record => {
+        if (record.type === 10 || record.type === 30 || record.type === 50) {
             const playerName = record.playerNumber ? playerData[record.homeOrAway + 'Players'].filter(pd => pd.number === record.playerNumber)[0].name : '';
+            return Object.assign({}, record, {playerName});
+        } else {
+            return Object.assign({}, record);
+        }
+    });
+}
 
-            switch (record.type) {
-                case 10:
-                    log(record, `${playerName} scored ${record.pointsMade} points, score: ${record.newScore}`);
-                    break;
-                case 20:
-                    log(record, `Timeout requested`);
-                    break;
-                case 30:
-                    log(record, `!!!!! Fault by ${playerName}`);
-                    break;
-                case 40:
-                    console.log();
-                    console.log(`Period ${record.period} started!`);
-                    break;
-                case 50:
-                    if (record.inOrOut === 'in')
-                        log(record, `${playerName} entered the field`);
-                    else
-                        log(record, `${playerName} left the field`);
-                    break;
-            }
-        });
+getPlayers(playerData => {
+    console.log('Fetched teams data');
+
+    getMatchRecords(records => {
+        console.log('Fetched match data');
+
+        const enrichedData = enrich(records, playerData);
+
+        http.createServer((req, res) => {
+            res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
+            res.write(JSON.stringify(enrichedData));
+            res.end();
+        }).listen(8080, () => console.log('Started server'));
     });
 });
