@@ -1,0 +1,105 @@
+<style>
+  .background {
+    display: flex;
+    flex-direction: column;
+    background-color: #34495e;
+  }
+
+  .record {
+    padding: 10px;
+    color: white;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    border-radius: 10px;
+  }
+
+  .record-outer {
+    display: flex;
+    padding: 10px;
+  }
+
+  .record-inner {
+    display: inline-block;
+
+    padding: 15px;
+    color: white;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    border-radius: 10px;
+  }
+
+  .home {
+    justify-content: flex-end;
+  }
+
+  .away {
+    justify-content: flex-start;
+  }
+
+  .home > .record-inner {
+    background-color: #e74c3c;
+    'text-align: left;
+  }
+
+  .away > .record-inner {
+    background-color: #3498db;
+    'text-align: right;
+  }
+
+  .neitherHomeNorAway {
+    background-color: #e67e22;
+
+    display: inline-block;
+
+    padding: 15px;
+    color: white;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    border-radius: 10px;
+  }
+
+  .ball {
+
+  }
+</style>
+
+<div class="background">
+  <div *ngFor="let record of data">
+    <div style="display: flex;"
+      [ngStyle]="{'flex-direction': record.homeOrAway === 'home' ? 'row' : 'row-reverse'}">
+      <div class="record-outer" style="width: 100%;" [ngClass]="{home: record.homeOrAway === 'home', away: record.homeOrAway === 'away'}">
+        <div class="record-inner">
+          <div>
+            <div *ngIf="record.type === 10">
+              <p>{{record.playerName}} scored {{record.pointsMade}} points, score: {{record.newScore}}</p>
+            </div>
+            <div *ngIf="record.type === 20">
+              <p>Timeout requested</p>
+            </div>
+            <div *ngIf="record.type === 30">
+              <p>Fault by {{record.playerName}}</p>
+            </div>
+            <div *ngIf="record.type === 50">
+              <p *ngIf="record.inOrOut === 'in'">
+                {{record.playerName}} entered the field
+              </p>
+
+              <p *ngIf="record.inOrOut === 'uit'">
+                {{record.playerName}} left the field
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="record" style="width: 50%; text-align: center">
+        <div *ngIf="record.type === 40">
+          <p class="neitherHomeNorAway">Period {{record.period}} started!</p>
+        </div>
+        <div *ngIf="record.type !== 40">
+          <p class="ball" style="padding: 15px;">{{record.minute}}</p>
+        </div>
+      </div>
+      <div class="record" style="width: 100%;"></div>
+    </div>
+  </div>
+</div>
