@@ -1,0 +1,7 @@
+<div
+  [ngStyle]="{'text-align': isHome ? 'left': 'right'}">
+  <h2>COURT</h2>
+  <p *ngFor="let player of players | playerOnField : true">
+    {{player.displayName}} ({{player.fault || 0}}, {{player.timePlayed}})
+  </p>
+</div>

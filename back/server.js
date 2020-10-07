@@ -1,16 +1,18 @@
 const http = require('http');
 
-const headers = {
-    "authorization": "na",
-    "content-type": "application/json"
-};
-
-const body = {
-    "WedGUID": "BVBL20219130OVHSE41AJC",
-    "CRUD": "R"
-};
+const matchGuid = 'BVBL20219130OVHSE41AJC';
 
 function getMatchRecords(cb) {
+    const headers = {
+        "authorization": "na",
+        "content-type": "application/json"
+    };
+
+    const body = {
+        "WedGUID": matchGuid,
+        "CRUD": "R"
+    };
+
     const options = {
         host: "vblcb.wisseq.eu",
         port: 80,
@@ -26,7 +28,7 @@ function getMatchRecords(cb) {
         res.on('end', () => {
             cb(JSON
                 .parse(data)['GebNis']
-                .filter(record => record['GebType'] !== 60)
+                //.filter(record => record['GebType'] !== 60)
                 .map(record => {
                     const type = record['GebType'];
                     const period = record['Periode'];
@@ -53,6 +55,8 @@ function getMatchRecords(cb) {
                             return {type, period, minute};
                         case 50: // in or out
                             return {type, period, minute, playerNumber, homeOrAway, inOrOut: record['Text']};
+                        case 60:
+                            return {type, period, minute, text: record['Text']};
                     }
                 }));
         });
@@ -63,6 +67,16 @@ function getMatchRecords(cb) {
 }
 
 function getPlayers(cb) {
+    const headers = {
+        "authorization": "na",
+        "content-type": "application/json"
+    };
+
+    const body = {
+        "WedGUID": matchGuid,
+        "CRUD": "R"
+    };
+
     const options = {
         host: "vblcb.wisseq.eu",
         port: 80,
@@ -94,9 +108,40 @@ function getPlayers(cb) {
 
 }
 
-function log(record, text) {
-    const time = (record.period - 1) * 10 + record.minute;
-    console.log(`${record.homeOrAway.toUpperCase()}\t${time} min\t${text}`);
+function getMatchData(cb) {
+    const headers = {
+        "authorization": "na",
+        "content-type": "application/json"
+    };
+
+    const options = {
+        host: "vblcb.wisseq.eu",
+        port: 80,
+        path: '/VBLCB_WebService/data/PouleMatchesByGuid?issguid=BVBL20219130OVHSE41A',
+        method: 'GET',
+        headers
+    };
+
+    const req = http.request(options, res => {
+        res.setEncoding('utf8');
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+            const d = JSON.parse(data);
+            const match = d.filter(record => record.guid === matchGuid)[0];
+            cb({
+                home: match.tTNaam,
+                homeGuid: match.tTGUID.split('HSE  ')[0],
+                away: match.tUNaam,
+                awayGuid: match.tUGUID.split('HSE  ')[0],
+                date: match.datumString,
+                where: match.accNaam,
+                startTime: match.beginTijd
+            });
+        });
+    });
+
+    req.end();
 }
 
 function enrich(records, playerData) {
@@ -110,18 +155,22 @@ function enrich(records, playerData) {
     });
 }
 
-getPlayers(playerData => {
-    console.log('Fetched teams data');
+getMatchData(matchData => {
+    console.log('Fetched match data');
 
-    getMatchRecords(records => {
-        console.log('Fetched match data');
+    getPlayers(playerData => {
+        console.log('Fetched teams data');
 
-        const enrichedData = enrich(records, playerData);
+        getMatchRecords(records => {
+            console.log('Fetched match data');
 
-        http.createServer((req, res) => {
-            res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
-            res.write(JSON.stringify({playerData, records: enrichedData}));
-            res.end();
-        }).listen(8080, () => console.log('Started server'));
-    });
+            const enrichedData = enrich(records, playerData);
+
+            http.createServer((req, res) => {
+                res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
+                res.write(JSON.stringify({matchData, playerData, records: enrichedData}));
+                res.end();
+            }).listen(8080, () => console.log('Started server'));
+        });
+    })
 });

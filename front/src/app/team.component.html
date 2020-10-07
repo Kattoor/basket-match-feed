@@ -1,0 +1,11 @@
+<div>
+  <div
+    style="height: 100px; display: flex; justify-content: center; background-color: white; width: 30%; margin: auto; border-radius: 20px; padding: 20px;">
+    <img style="object-fit: contain" src="https://vbl.wisseq.eu/vbldataOrganisation/{{teamGuid}}_Small.jpg"/>
+  </div>
+  <h1 style="text-align: center">{{teamName}}</h1>
+  <div style="display: flex; justify-content: center;" [ngStyle]="{'flex-direction': isHome ? 'row' : 'row-reverse'}">
+    <bench [players]="players" [isHome]="isHome"></bench>
+    <court [players]="players" [isHome]="isHome"></court>
+  </div>
+</div>
