@@ -2,6 +2,6 @@
   [ngStyle]="{'margin-left': isHome ? 0 : '25px', 'margin-right': isHome ? '25px' : 0, 'text-align': isHome ? 'left': 'right'}">
   <h2>BENCH</h2>
   <p *ngFor="let player of players | playerOnField : false">
-    {{player.displayName}} ({{player.fault || 0}}, {{player.timePlayed}})
+    {{player.displayName}}
   </p>
 </div>

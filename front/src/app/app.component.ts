@@ -23,6 +23,8 @@ export class AppComponent {
   homePlayersLast5 = [];
   awayPlayersLast5 = [];
 
+  selected = false;
+
   colorScheme = {
     domain: ['#27ae60', '#2980b9', '#e74c3c']
   };
@@ -37,7 +39,37 @@ export class AppComponent {
   }
 
   constructor(private backendService: BackendService) {
-    this.backendService.getData()
+
+  }
+
+  calculateGraph() {
+    this.multi = this.homePlayers
+      .map(p => ({
+        name: p.name.split(' ')[0],
+        series: [
+          {
+            name: 'Score',
+            value: p.points
+          },
+          {
+            name: 'Time Played',
+            value: p.timePlayed
+          },
+          {
+            name: 'Faults',
+            value: p.fault
+          }
+        ]
+      }));
+    this.multi = this.multi.sort((p1, p2) => {
+      return p1.series[0].value - p2.series[0].value;
+    });
+  }
+
+  onSelect(matchGuid: string) {
+    this.selected = true;
+
+    this.backendService.getMatchData(matchGuid)
       .subscribe((data: any) => {
         const playerData = data.playerData;
         const records = data.records;
@@ -54,10 +86,12 @@ export class AppComponent {
           timePlayed: 0
         }));
 
-        this.homeTeamName = matchData.home;
-        this.awayTeamName = matchData.away;
-        this.homeGuid = matchData.homeGuid;
-        this.awayGuid = matchData.awayGuid;
+        const thisMatchData = matchData.filter(record => record.matchGuid === matchGuid)[0]
+
+        this.homeGuid = thisMatchData.homeTeam.guid.split('HSE  ')[0];
+        this.awayGuid = thisMatchData.awayTeam.guid.split('HSE  ')[0];
+        this.homeTeamName = thisMatchData.homeTeam.name;
+        this.awayTeamName = thisMatchData.awayTeam.name;
 
         records.forEach(record => {
           if (record.type === 50) {
@@ -126,29 +160,5 @@ export class AppComponent {
           this.calculateGraph();
         });
       });
-  }
-
-  calculateGraph() {
-    this.multi = this.homePlayers
-      .map(p => ({
-        name: p.name.split(' ')[0],
-        series: [
-          {
-            name: 'Score',
-            value: p.points
-          },
-          {
-            name: 'Time Played',
-            value: p.timePlayed
-          },
-          {
-            name: 'Faults',
-            value: p.fault
-          }
-        ]
-      }));
-    this.multi = this.multi.sort((p1, p2) => {
-      return p1.series[0].value - p2.series[0].value;
-    });
   }
 }

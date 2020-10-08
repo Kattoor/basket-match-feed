@@ -1,4 +1,8 @@
-<div class="column">
+<div class="container" *ngIf="!selected">
+  <matches-list (select)="onSelect($event)"></matches-list>
+</div>
+
+<div class="column" *ngIf="selected">
   <div style="height: 15vh;"></div>
   <div style="height: /*60*/85vh; overflow-y: hidden;" class="row">
     <team style="width: 40%" [players]="homePlayers" [isHome]="true" [teamGuid]="homeGuid"
@@ -53,3 +57,4 @@
     </div>
   </div>
 </div>
+

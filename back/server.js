@@ -1,8 +1,8 @@
 const http = require('http');
 
-const matchGuid = 'BVBL20219130OVHSE41AJC';
+const pouleGuid = 'BVBL20219130OVHSE41A';
 
-function getMatchRecords(cb) {
+function getMatchRecords(matchGuid, cb) {
     const headers = {
         "authorization": "na",
         "content-type": "application/json"
@@ -66,7 +66,7 @@ function getMatchRecords(cb) {
     req.end();
 }
 
-function getPlayers(cb) {
+function getPlayers(matchGuid, cb) {
     const headers = {
         "authorization": "na",
         "content-type": "application/json"
@@ -117,7 +117,7 @@ function getMatchData(cb) {
     const options = {
         host: "vblcb.wisseq.eu",
         port: 80,
-        path: '/VBLCB_WebService/data/PouleMatchesByGuid?issguid=BVBL20219130OVHSE41A',
+        path: '/VBLCB_WebService/data/PouleMatchesByGuid?issguid=' + pouleGuid,
         method: 'GET',
         headers
     };
@@ -144,6 +144,97 @@ function getMatchData(cb) {
     req.end();
 }
 
+function getAllTemseMatches(cb) {
+    const temseGuid = 'BVBL1047HSE  3';
+    const options = {
+        host: "vblcb.wisseq.eu",
+        port: 80,
+        path: '/VBLCB_WebService/data/TeamMatchesByGuid?teamGuid=' + temseGuid.replace(/ /g, '+'),
+        method: 'GET'
+    };
+
+    const req = http.request(options, res => {
+        res.setEncoding('utf8');
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+            const matches = JSON.parse(data)
+                .map(m => {
+                    const dateSplit = m.datumString.split('-').map(v => +v);
+                    const timeSplit = m.beginTijd.split('.').map(v => +v);
+                    const matchDate = new Date(dateSplit[2], dateSplit[1] - 1, dateSplit[0], timeSplit[0], timeSplit[1]);
+
+                    const match = {
+                        matchGuid: m.guid,
+                        homeTeam: {
+                            guid: m.tTGUID,
+                            name: m.tTNaam
+                        },
+                        awayTeam: {
+                            guid: m.tUGUID,
+                            name: m.tUNaam
+                        },
+                        dateTime: matchDate.getTime(),
+                        sportsHall: m.accNaam,
+                        result: m.uitslag.replace(/ /g, ''),
+
+                        enemyTeam: m.tTGUID === temseGuid ? m.tUNaam : m.tTNaam
+                    };
+
+                    if (match.result) {
+                        const resultSplit = match.result.split('-');
+                        const homeScore = +resultSplit[0];
+                        const awayScore = +resultSplit[1];
+
+                        match.didWeWin =
+                            (match.homeTeam.guid === temseGuid && homeScore > awayScore) ||
+                            (match.awayTeam.guid === temseGuid && awayScore > homeScore);
+                    }
+
+                    return match;
+                });
+            cb(matches);
+        });
+    });
+
+    req.end();
+}
+
+getAllTemseMatches(matches => {
+    console.log('Fetched all matches');
+    http.createServer((req, res) => {
+        res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
+
+        const route = req.url.split('?')[0];
+
+        switch (route) {
+            case '/api/all-matches':
+                res.write(JSON.stringify(matches));
+                res.end();
+                break;
+            case '/api/match':
+                const matchGuid = req.url.split('?guid=')[1];
+                getPlayers(matchGuid, playerData => {
+                    console.log('Fetched teams data');
+
+                    getMatchRecords(matchGuid,records => {
+                        console.log('Fetched match data');
+
+                        const enrichedData = enrich(records, playerData);
+
+                        res.write(JSON.stringify({matchData: matches, playerData, records: enrichedData}));
+                        res.end();
+                    });
+                });
+                break;
+            default:
+                break;
+        }
+    }).listen(8080, () => console.log('Started server'));
+
+});
+
+
 function enrich(records, playerData) {
     return records.map(record => {
         if (record.type === 10 || record.type === 30 || record.type === 50) {
@@ -155,6 +246,8 @@ function enrich(records, playerData) {
     });
 }
 
+
+/*
 getMatchData(matchData => {
     console.log('Fetched match data');
 
@@ -174,3 +267,4 @@ getMatchData(matchData => {
         });
     })
 });
+*/

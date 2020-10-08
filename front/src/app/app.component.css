@@ -1,3 +1,16 @@
+* {
+  font-family: sans-serif;
+}
+
+.container {
+  background-color: #ecf0f1;
+  width: calc(100vw - (100vw - 100%));
+}
+
+
+
+
+
 .chart-legend, .legend-item {
   background: rgba(255, 255, 255, 0.05) !important;
   font-family: sans-serif;
