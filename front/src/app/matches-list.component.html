@@ -1,49 +1,3 @@
-<style>
-  .container {
-    width: 40%;
-    margin: auto;
-    padding: 50px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .match-record {
-    width: 100%;
-    margin: 10px;
-
-    cursor: pointer;
-
-    border-radius: 10px;
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .match-unplayed:nth-child(odd) {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  .match-won {
-    background-color: #27ae60;
-  }
-
-  .match-lost {
-    background-color: #e74c3c;
-  }
-
-  .match-unplayed, .match-won, .match-lost {
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-  }
-
-  .match-unplayed:hover, .match-won:hover, .match-lost:hover {
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
-  }
-</style>
-
 <div class="container">
   <h1>BBC SCHELDEJEUGD TEMSE</h1>
   <div
@@ -51,10 +5,12 @@
     class="match-record"
     [ngClass]="{'match-won': match.didWeWin, 'match-lost': match.didWeWin === false, 'match-unplayed': match.didWeWin === undefined}"
     (click)="onClick(match)">
-    <div style="display: flex; align-items: center; width: 30%; padding-left: 10px;">
-      <fa-icon [icon]="[match.inPast ? 'fas' : 'far', 'clock']" size="2x" style="padding-right: 10px;"></fa-icon>
+    <div class="match-record-left-side">
+      <fa-icon [icon]="['fas', match.isHome ? 'home' : 'car']" size="2x" style="padding-right: 10px;"></fa-icon>
+      <fa-icon class="clock-icon" [icon]="[match.inPast ? 'fas' : 'far', 'clock']" size="2x" style="padding-right: 10px;"></fa-icon>
       <div style="display: flex; flex-direction: column">
-        <p style="margin-bottom: 1px;">{{match.dateTime | date:'d MMM yyyy' }}</p>
+        <p class="match-record-date-large">{{match.dateTime | date:'d MMM yyyy' }}</p>
+        <p class="match-record-date-small">{{match.dateTime | date:'d/M' }}</p>
         <p style="margin-top: 1px;">{{match.dateTime | date:'HH:mm' }}</p>
       </div>
     </div>

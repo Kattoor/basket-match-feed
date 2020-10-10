@@ -1,0 +1,99 @@
+.container {
+  width: 50%;
+  margin: auto;
+  padding: 50px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.match-record {
+  width: 100%;
+  margin: 10px;
+
+  cursor: pointer;
+
+  border-radius: 10px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.match-unplayed:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.match-won {
+  background-color: #27ae60;
+}
+
+.match-lost {
+  background-color: #e74c3c;
+}
+
+.match-unplayed, .match-won, .match-lost {
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+.match-unplayed:hover, .match-won:hover, .match-lost:hover {
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.match-record-left-side {
+  display: flex;
+  align-items: center;
+  width: 35%;
+  padding-left: 10px;
+}
+
+.match-record-date-small {
+  margin-bottom: 1px;
+  display: none;
+}
+
+.match-record-date-large {
+  margin-bottom: 1px;
+}
+
+@media (max-width: 1200px) {
+  .container {
+    width: 60vw !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .container {
+    width: 65vw !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .clock-icon {
+    display: none;
+  }
+
+  .container {
+    width: 80vw !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .clock-icon {
+    display: none;
+  }
+
+  .container {
+    width: 90vw !important;
+  }
+
+  .match-record-date-small {
+    display: block;
+  }
+
+  .match-record-date-large {
+    display: none;
+  }
+}

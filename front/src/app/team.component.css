@@ -1,0 +1,27 @@
+.team-logo {
+  height: 140px;
+}
+
+.team-logo-image {
+  height: 100px;
+  width: 30%;
+  margin: auto;
+
+  display: flex;
+  justify-content: center;
+  border-radius: 20px;
+  padding: 20px;
+
+  background-color: white;
+}
+
+/*
+.team-logo-spinner {
+  height: 100px;
+  width: 30%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+*/

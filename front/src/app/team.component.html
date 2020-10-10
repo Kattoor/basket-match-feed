@@ -1,7 +1,17 @@
 <div>
-  <div
-    style="height: 100px; display: flex; justify-content: center; background-color: white; width: 30%; margin: auto; border-radius: 20px; padding: 20px;">
-    <img style="object-fit: contain" src="https://vbl.wisseq.eu/vbldataOrganisation/{{teamGuid}}_Small.jpg"/>
+  <div class="team-logo">
+    <!--<div class="team-logo-spinner" *ngIf="!testing">
+      <app-looping-rhombuses-spinner
+        [animationDuration]="1500"
+        [rhombusSize]="15"
+        [color]="'black'"
+      ></app-looping-rhombuses-spinner>
+    </div>-->
+
+    <div class="team-logo-image" *ngIf="teamGuid">
+      <img style="object-fit: contain"
+           src="https://vbl.wisseq.eu/vbldataOrganisation/{{teamGuid}}_Small.jpg"/>
+    </div>
   </div>
   <h1 style="text-align: center">{{teamName}}</h1>
   <div style="display: flex; justify-content: center;" [ngStyle]="{'flex-direction': isHome ? 'row' : 'row-reverse'}">

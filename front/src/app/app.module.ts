@@ -13,7 +13,13 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatchesListComponent} from "./matches-list.component";
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {faClock as farClock} from "@fortawesome/free-regular-svg-icons";
-import {faClock as fasClock} from "@fortawesome/free-solid-svg-icons";
+import {faCar, faClock as fasClock, faHome} from "@fortawesome/free-solid-svg-icons";
+import {AppRoutingModule} from "./app-routing/app-routing.module";
+import {MatchComponent} from "./match.component";
+import {
+  LoopingRhumbusesSpinnerModule,
+  SpringSpinnerModule
+} from "angular-epic-spinners";
 
 
 @NgModule({
@@ -23,6 +29,7 @@ import {faClock as fasClock} from "@fortawesome/free-solid-svg-icons";
     CourtComponent,
     TeamComponent,
     MatchesListComponent,
+    MatchComponent,
     PlayerOnFieldFilterPipe
   ],
   imports: [
@@ -31,13 +38,15 @@ import {faClock as fasClock} from "@fortawesome/free-solid-svg-icons";
     HttpClientModule,
     NgxChartsModule,
     BrowserAnimationsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    AppRoutingModule,
+    LoopingRhumbusesSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {
   constructor(private library: FaIconLibrary) {
-    library.addIcons(farClock, fasClock);
+    library.addIcons(farClock, fasClock, faHome, faCar);
   }
 }

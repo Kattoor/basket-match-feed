@@ -1,60 +1,14 @@
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+
+<!--
 <div class="container" *ngIf="!selected">
   <matches-list (select)="onSelect($event)"></matches-list>
 </div>
 
 <div class="column" *ngIf="selected">
-  <div style="height: 15vh;"></div>
-  <div style="height: /*60*/85vh; overflow-y: hidden;" class="row">
-    <team style="width: 40%" [players]="homePlayers" [isHome]="true" [teamGuid]="homeGuid"
-          [teamName]="homeTeamName"></team>
 
-    <div style="display: flex; flex-direction: column; align-items: center; padding-top: 5%; width: 20%;">
-      <div>
-        <p style="margin: 5px;">PERIOD: {{period}}</p>
-        <p style="margin: 5px;">MINUTE: {{minute}}</p>
-      </div>
-      <h1 style="font-size: 3em">{{score}}</h1>
-    </div>
-
-    <team style="width: 40%;" [players]="awayPlayers" [isHome]="false" [teamGuid]="awayGuid"
-          [teamName]="awayTeamName"></team>
-  </div>
-  <div
-    style="height: /*25*/100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-    <div style="width: 80%; height: 80%;" #containerRef>
-      <ngx-charts-bar-vertical-2d
-        [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
-        [scheme]="colorScheme"
-        [results]="multi"
-        [xAxis]="true"
-        [yAxis]="false"
-        [barPadding]="5"
-        [groupPadding]="5"
-        [showXAxisLabel]="false"
-        [showYAxisLabel]="false"
-        [roundDomains]="true"
-        style="font-family: sans-serif"
-      >
-        <ng-template #tooltipTemplate let-model="model">
-          <p style="font-family: sans-serif;">{{model.series}}</p>
-          <p style="font-family: sans-serif;">{{model.label}}: {{model.value}}</p>
-        </ng-template>
-      </ngx-charts-bar-vertical-2d>
-    </div>
-    <div style="background-color: rgba(0, 0, 0, .05); font-family: sans-serif; display: flex; align-items: center; margin: 10px;">
-      <div style="display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-        <div style="background-color: #27ae60; height: 15px; width: 20px; border-radius: 5px;"></div>
-        <p style="padding-left: 5px;">Score</p>
-      </div>
-      <div style="display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-        <div style="background-color: #2980b9; height: 15px; width: 20px; border-radius: 5px;"></div>
-        <p style="padding-left: 5px;">Time Played</p>
-      </div>
-      <div style="display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-        <div style="background-color: #e74c3c; height: 15px; width: 20px; border-radius: 5px;"></div>
-        <p style="padding-left: 5px;">Faults</p>
-      </div>
-    </div>
-  </div>
 </div>
 
+-->

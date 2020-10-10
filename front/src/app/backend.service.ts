@@ -9,10 +9,14 @@ export class BackendService {
   }
 
   getAllMatches() {
-    return this.http.get<Match[]>('http://localhost:8080/api/all-matches');
+    return this.http.get<Match[]>('http://catthoor.com:8081/api/all-matches');
   }
 
   getMatchData(matchGuid: string) {
-    return this.http.get('http://localhost:8080/api/match?guid=' + matchGuid);
+    return this.http.get('http://catthoor.com:8081/api/match?guid=' + matchGuid);
+  }
+
+  getMatchMetaData(matchGuid: string) {
+    return this.http.get('http://catthoor.com:8081/api/match-metadata?guid=' + matchGuid);
   }
 }

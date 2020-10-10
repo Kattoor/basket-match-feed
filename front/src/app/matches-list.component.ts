@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Output} from "@angular/core";
 import {BackendService} from "./backend.service";
+import {Router} from "@angular/router";
 
 export interface Match {
   matchGuid: string,
@@ -16,6 +17,7 @@ export interface Match {
   result: string,
   enemyTeam: string,
 
+  isHome: boolean,
   inPast: boolean,
   didWeWin?: boolean
 }
@@ -26,15 +28,17 @@ export interface Match {
   styleUrls: ['./matches-list.component.css']
 })
 export class MatchesListComponent {
-  @Output() select: EventEmitter<string> = new EventEmitter<string>();
+  //@Output() select: EventEmitter<string> = new EventEmitter<string>();
 
   matches: Match[];
 
-  constructor(private backendService: BackendService) {
+  constructor(private backendService: BackendService, private router: Router) {
     backendService.getAllMatches().subscribe(data =>
       this.matches = data
         .map(match => {
+          match.isHome = match.sportsHall === 'Sporthal Temsica';
           match.inPast = new Date(Date.now()) > new Date(match.dateTime);
+          match.enemyTeam = match.enemyTeam.split(' HSE ')[0];
           return match;
         })
         .sort((m1: Match, m2: Match) => {
@@ -43,6 +47,7 @@ export class MatchesListComponent {
   }
 
   onClick(match: Match) {
-    this.select.emit(match.matchGuid);
+    this.router.navigate(['/match', match.matchGuid]);
+    //this.select.emit(match.matchGuid);
   }
 }

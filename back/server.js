@@ -1,6 +1,6 @@
 const http = require('http');
-
-const pouleGuid = 'BVBL20219130OVHSE41A';
+const fs = require('fs');
+const path = require('path');
 
 function getMatchRecords(matchGuid, cb) {
     const headers = {
@@ -108,42 +108,6 @@ function getPlayers(matchGuid, cb) {
 
 }
 
-function getMatchData(cb) {
-    const headers = {
-        "authorization": "na",
-        "content-type": "application/json"
-    };
-
-    const options = {
-        host: "vblcb.wisseq.eu",
-        port: 80,
-        path: '/VBLCB_WebService/data/PouleMatchesByGuid?issguid=' + pouleGuid,
-        method: 'GET',
-        headers
-    };
-
-    const req = http.request(options, res => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-            const d = JSON.parse(data);
-            const match = d.filter(record => record.guid === matchGuid)[0];
-            cb({
-                home: match.tTNaam,
-                homeGuid: match.tTGUID.split('HSE  ')[0],
-                away: match.tUNaam,
-                awayGuid: match.tUGUID.split('HSE  ')[0],
-                date: match.datumString,
-                where: match.accNaam,
-                startTime: match.beginTijd
-            });
-        });
-    });
-
-    req.end();
-}
-
 function getAllTemseMatches(cb) {
     const temseGuid = 'BVBL1047HSE  3';
     const options = {
@@ -200,6 +164,75 @@ function getAllTemseMatches(cb) {
     req.end();
 }
 
+function getMatchMetaData(matchGuid, cb) {
+    const options = {
+        host: "vblcb.wisseq.eu",
+        port: 80,
+        path: '/VBLCB_WebService/data/MatchByWedGuid?issguid=' + matchGuid,
+        method: 'GET'
+    };
+
+    const req = http.request(options, res => {
+        res.setEncoding('utf8');
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+            const sportsHall = JSON.parse(data)[0].doc.accommodatieDoc;
+            cb({
+                name: sportsHall.naam,
+                address: {
+                    postalCode: sportsHall.adres.postcode,
+                    place: sportsHall.adres.plaats,
+                    street: sportsHall.adres.straat,
+                    houseNumber: sportsHall.adres.huisNr
+                }
+            });
+        });
+    });
+
+    req.end();
+}
+
+function routeResource(request, response) {
+    let filePath = './dist/basket-match-feed' + request.url;
+    if (filePath === './dist/basket-match-feed/')
+        filePath = './dist/basket-match-feed/index.html';
+
+    const extname = path.extname(filePath);
+    let contentType = 'text/html';
+    switch (extname) {
+        case '.js':
+            contentType = 'text/javascript';
+            break;
+        case '.png':
+            contentType = 'image/png';
+            break;
+        case '.ico':
+            contentType = 'image/ico';
+            break;
+    }
+
+    fs.readFile(filePath, function (error, content) {
+        if (error) {
+            if (error.code === 'ENOENT') {
+                fs.readFile('./dist/basket-match-feed/index.html', function (error, content) {
+                    response.writeHead(200, {'Content-Type': contentType});
+                    response.end(content, 'utf-8');
+                });
+            } else {
+                console.log(filePath);
+                console.log(error);
+                response.writeHead(500);
+                response.end('Sorry, check with the site admin for error: ' + error.code + ' ..\n');
+                response.end();
+            }
+        } else {
+            response.writeHead(200, {'Content-Type': contentType});
+            response.end(content, 'utf-8');
+        }
+    });
+}
+
 getAllTemseMatches(matches => {
     console.log('Fetched all matches');
     http.createServer((req, res) => {
@@ -207,33 +240,44 @@ getAllTemseMatches(matches => {
 
         const route = req.url.split('?')[0];
 
-        switch (route) {
-            case '/api/all-matches':
-                res.write(JSON.stringify(matches));
-                res.end();
-                break;
-            case '/api/match':
-                const matchGuid = req.url.split('?guid=')[1];
-                getPlayers(matchGuid, playerData => {
-                    console.log('Fetched teams data');
+        if (!route.startsWith('/api')) {
+            routeResource(req, res);
+        } else {
+            switch (route) {
+                case '/api/all-matches':
+                    res.write(JSON.stringify(matches));
+                    res.end();
+                    break;
+                case '/api/match':
+                    const matchGuid = req.url.split('?guid=')[1];
+                    getPlayers(matchGuid, playerData => {
+                        console.log('Fetched teams data');
 
-                    getMatchRecords(matchGuid,records => {
-                        console.log('Fetched match data');
+                        getMatchRecords(matchGuid, records => {
+                            console.log('Fetched match data');
 
-                        const enrichedData = enrich(records, playerData);
+                            const enrichedData = enrich(records, playerData);
 
-                        res.write(JSON.stringify({matchData: matches, playerData, records: enrichedData}));
+                            res.write(JSON.stringify({matchData: matches, playerData, records: enrichedData}));
+                            res.end();
+                        });
+                    });
+                    break;
+                case '/api/match-metadata':
+                    const guid = req.url.split('?guid=')[1];
+                    getMatchMetaData(guid, matchMetaData => {
+                        console.log('Fetched match metadata');
+
+                        res.write(JSON.stringify(matchMetaData));
                         res.end();
                     });
-                });
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
         }
-    }).listen(8080, () => console.log('Started server'));
-
+    }).listen(8081, () => console.log('Started server'));
 });
-
 
 function enrich(records, playerData) {
     return records.map(record => {
@@ -245,26 +289,3 @@ function enrich(records, playerData) {
         }
     });
 }
-
-
-/*
-getMatchData(matchData => {
-    console.log('Fetched match data');
-
-    getPlayers(playerData => {
-        console.log('Fetched teams data');
-
-        getMatchRecords(records => {
-            console.log('Fetched match data');
-
-            const enrichedData = enrich(records, playerData);
-
-            http.createServer((req, res) => {
-                res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
-                res.write(JSON.stringify({matchData, playerData, records: enrichedData}));
-                res.end();
-            }).listen(8080, () => console.log('Started server'));
-        });
-    })
-});
-*/
