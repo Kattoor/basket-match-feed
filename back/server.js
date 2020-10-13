@@ -110,6 +110,7 @@ function getPlayers(matchGuid, cb) {
 
 function getAllTemseMatches(cb) {
     const temseGuid = 'BVBL1047HSE  3';
+    //const temseGuid = 'BVBL1047HSE  2'
     const options = {
         host: "vblcb.wisseq.eu",
         port: 80,
