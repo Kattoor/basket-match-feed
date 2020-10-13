@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'barchart2',
+  selector: 'canvas-chart',
   templateUrl: './canvas-chart.component.html',
   styleUrls: ['./canvas-chart.component.css']
 })

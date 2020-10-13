@@ -3,7 +3,7 @@ type SvgInHtml = HTMLElement & SVGElement;
 import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'barchart3',
+  selector: 'svg-chart',
   templateUrl: './svg-chart.component.html',
   styleUrls: ['./svg-chart.component.css']
 })
