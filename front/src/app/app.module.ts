@@ -17,10 +17,10 @@ import {faCar, faClock as fasClock, faHome} from "@fortawesome/free-solid-svg-ic
 import {AppRoutingModule} from "./app-routing/app-routing.module";
 import {MatchComponent} from "./match.component";
 import {
-  LoopingRhumbusesSpinnerModule,
-  SpringSpinnerModule
+  LoopingRhumbusesSpinnerModule
 } from "angular-epic-spinners";
-
+import {CanvasChartComponent} from "./canvas-chart.component";
+import {SvgChartComponent} from "./svg-chart.component";
 
 @NgModule({
   declarations: [
@@ -30,7 +30,9 @@ import {
     TeamComponent,
     MatchesListComponent,
     MatchComponent,
-    PlayerOnFieldFilterPipe
+    PlayerOnFieldFilterPipe,
+
+    SvgChartComponent
   ],
   imports: [
     BrowserModule,
