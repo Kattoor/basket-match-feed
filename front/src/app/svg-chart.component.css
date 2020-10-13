@@ -1,0 +1,50 @@
+.grid-panel {
+
+}
+
+.odd {
+  fill: none;
+}
+
+.even {
+  fill: rgba(0, 0, 0, .05);
+}
+
+
+.bar:hover {
+  opacity: 0.8;
+  transition: opacity 100ms ease-in-out;
+}
+
+.bar:hover + .text {
+  display: block !important;
+}
+
+.bar:hover {
+  cursor: pointer;
+}
+
+#tooltip {
+  color: white;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+  padding: 15px;
+}
+
+#tooltip:after {
+  border-right: solid 7px transparent;
+  border-left: solid 7px transparent;
+  border-top: solid 7px rgba(0, 0, 0, 0.75);
+  transform: translateX(-50%);
+  position: absolute;
+  z-index: -1;
+  content: '';
+  top: 100%;
+  left: 50%;
+  height: 0;
+  width: 0;
+}
+
+.testing {
+  left: 10%;
+}

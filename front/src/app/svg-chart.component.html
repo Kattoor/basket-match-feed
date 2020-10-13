@@ -1,0 +1,46 @@
+<div style="width: 100%; margin: 0; padding: 0; display: flex; justify-content: center; height: 50vh; position: relative;">
+  <div id="tooltip" style="position: absolute; display: none; z-index: 5"></div>
+  <svg id="svg" width="100%" height="100%">
+    <g>
+      <g>
+        <g *ngFor="let record of dataToDraw; let i = index"
+           [ngClass]="{'grid-panel': true, 'even': i % 2 === 0, 'odd': i % 2 === 1}">
+          <rect stroke="none" [attr.height]="svgHeight - 25" [attr.width]="record.width" [attr.x]="record.x"
+                y="0"></rect>
+        </g>
+      </g>
+      <g>
+        <g *ngFor="let record of dataToDraw; let i = index">
+          <g>
+            <rect class="scoreBar bar" [attr.fill]="colors['domain'][0]" [attr.y]="record.bars.score.y"
+                  [attr.height]="record.bars.score.height" [attr.width]="record.bars.score.width"
+                  [attr.x]="record.bars.score.x"
+                  (mouseenter)="showToolTip($event, 'score', record)"
+                  (mouseout)="hideToolTip()"/>
+          </g>
+          <g>
+            <rect class="timePlayingBar bar" [attr.fill]="colors['domain'][1]" [attr.y]="record.bars.timePlaying.y"
+                  [attr.height]="record.bars.timePlaying.height" [attr.width]="record.bars.timePlaying.width"
+                  [attr.x]="record.bars.timePlaying.x"
+                  (mouseenter)="showToolTip($event, 'timePlaying', record)"
+                  (mouseout)="hideToolTip()"/>
+          </g>
+          <g>
+            <rect class="faultsBar bar" [attr.fill]="colors['domain'][2]" [attr.y]="record.bars.faults.y"
+                  [attr.height]="record.bars.faults.height" [attr.width]="record.bars.faults.width"
+                  [attr.x]="record.bars.faults.x"
+                  (mouseenter)="showToolTip($event, 'faults', record)"
+                  (mouseout)="hideToolTip()"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g>
+      <g *ngFor="let record of dataToDraw; let i = index">
+        <title>{{record.name}}</title>
+        <text [attr.y]="svgHeight" [attr.x]="record.x + record.width / 2" [attr.width]="record.width"
+              stroke-width="0.01" text-anchor="middle" style="font-size: 12px;"> {{record.name}}</text>
+      </g>
+    </g>
+  </svg>
+</div>
