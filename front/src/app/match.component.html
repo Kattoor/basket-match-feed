@@ -15,43 +15,8 @@
         [teamName]="awayTeamName"></team>
 </div>
 
-<div
-  style="height: /*25*/100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-  <div class="chart" #containerRef>
-    <ngx-charts-bar-vertical-2d
-      [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
-      [scheme]="colorScheme"
-      [results]="multi"
-      [xAxis]="true"
-      [yAxis]="false"
-      [barPadding]="5"
-      [groupPadding]="5"
-      [showXAxisLabel]="false"
-      [showYAxisLabel]="false"
-      [roundDomains]="true"
-      style="font-family: sans-serif"
-    >
-      <ng-template #tooltipTemplate let-model="model">
-        <p style="font-family: sans-serif;">{{model.series}}</p>
-        <p style="font-family: sans-serif;">{{model.label}}: {{model.value}}</p>
-      </ng-template>
-    </ngx-charts-bar-vertical-2d>
-  </div>
-  <div
-    style="background-color: rgba(0, 0, 0, .05); font-family: sans-serif; display: flex; align-items: center; margin: 10px;">
-    <div style="display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-      <div style="background-color: #27ae60; height: 15px; width: 20px; border-radius: 5px;"></div>
-      <p style="padding-left: 5px;">Score</p>
-    </div>
-    <div style="display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-      <div style="background-color: #2980b9; height: 15px; width: 20px; border-radius: 5px;"></div>
-      <p style="padding-left: 5px;">Time Played</p>
-    </div>
-    <div style="display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-      <div style="background-color: #e74c3c; height: 15px; width: 20px; border-radius: 5px;"></div>
-      <p style="padding-left: 5px;">Faults</p>
-    </div>
-  </div>
+<div style="width: 80vw; margin: auto auto 30px;">
+  <barchart3 [data]="multi2" [colors]="colorScheme"></barchart3>
 </div>
 
 <div *ngIf="googleMapsUrl" class="google-maps">

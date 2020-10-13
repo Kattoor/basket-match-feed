@@ -35,6 +35,7 @@ export class MatchComponent {
   };
 
   multi: any[];
+  multi2: any[];
 
   constructor(private backendService: BackendService, private route: ActivatedRoute, public sanitizer: DomSanitizer) {
 
@@ -155,7 +156,7 @@ export class MatchComponent {
   }
 
   calculateGraph() {
-    this.multi = this.homePlayers
+    this.multi = (this.homeTeamName === 'BBC Scheldejeugd Temse' ? this.homePlayers : this.awayPlayers)
       .map(p => ({
         name: p.name.split(' ')[0],
         series: [
@@ -175,6 +176,17 @@ export class MatchComponent {
       }));
     this.multi = this.multi.sort((p1, p2) => {
       return p1.series[0].value - p2.series[0].value;
+    });
+
+    this.multi2 = (this.homeTeamName === 'BBC Scheldejeugd Temse' ? this.homePlayers : this.awayPlayers)
+      .map(p => ({
+        name: p.name.split(' ')[0],
+        score: p.points,
+        timePlaying: p.timePlayed,
+        faults: p.fault
+      }));
+    this.multi2 = this.multi2.sort((p1, p2) => {
+      return p1.score - p2.score;
     });
   }
 }
