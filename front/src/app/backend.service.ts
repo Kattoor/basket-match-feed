@@ -8,12 +8,14 @@ export class BackendService {
 
   }
 
+  teamGuid: string = 'BVBL1047HSE  1';
+
   getAllMatches() {
-    return this.http.get<Match[]>('http://catthoor.com:8081/api/all-matches');
+    return this.http.get<Match[]>('http://catthoor.com:8081/api/all-matches?teamGuid=' + this.teamGuid);
   }
 
   getMatchData(matchGuid: string) {
-    return this.http.get('http://catthoor.com:8081/api/match?guid=' + matchGuid);
+    return this.http.get('http://catthoor.com:8081/api/match?teamGuid=' + this.teamGuid + '&matchGuid=' + matchGuid);
   }
 
   getMatchMetaData(matchGuid: string) {

@@ -31,9 +31,27 @@ export class MatchesListComponent {
   //@Output() select: EventEmitter<string> = new EventEmitter<string>();
 
   matches: Match[];
+  teams = [
+    {name: 'A-ploeg', id: 'BVBL1047HSE  1'},
+    {name: 'B-ploeg', id: 'BVBL1047HSE  2'},
+    {name: 'C-ploeg', id: 'BVBL1047HSE  3'}
+  ];
+  selectedTeam: string;
+
+  teamChanged(newId) {
+    this.selectedTeam = newId;
+    this.backendService.teamGuid = this.selectedTeam;
+    this.getMatches();
+  }
 
   constructor(private backendService: BackendService, private router: Router) {
-    backendService.getAllMatches().subscribe(data =>
+    this.selectedTeam = backendService.teamGuid || 'BVBL1047HSE  1';
+    backendService.teamGuid = this.selectedTeam;
+    this.getMatches();
+  }
+
+  getMatches() {
+    this.backendService.getAllMatches().subscribe(data =>
       this.matches = data
         .map(match => {
           match.isHome = match.sportsHall === 'Sporthal Temsica';

@@ -1,5 +1,8 @@
 <div class="container">
   <h1>BBC SCHELDEJEUGD TEMSE</h1>
+  <select [ngModel]="selectedTeam" (change)="teamChanged($event.target['value'])">
+    <option *ngFor="let team of teams" value="{{team.id}}">{{team.name}}</option>
+  </select>
   <div
     *ngFor="let match of matches"
     class="match-record"

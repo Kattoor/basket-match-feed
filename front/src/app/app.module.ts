@@ -21,6 +21,7 @@ import {
 } from "angular-epic-spinners";
 import {CanvasChartComponent} from "./canvas-chart.component";
 import {SvgChartComponent} from "./svg-chart.component";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import {SvgChartComponent} from "./svg-chart.component";
     BrowserAnimationsModule,
     FontAwesomeModule,
     AppRoutingModule,
-    LoopingRhumbusesSpinnerModule
+    LoopingRhumbusesSpinnerModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

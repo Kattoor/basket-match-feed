@@ -15,21 +15,21 @@
             <rect class="scoreBar bar" [attr.fill]="colors['domain'][0]" [attr.y]="record.bars.score.y"
                   [attr.height]="record.bars.score.height" [attr.width]="record.bars.score.width"
                   [attr.x]="record.bars.score.x"
-                  (mouseenter)="showToolTip($event, 'score', record)"
+                  (mouseenter)="showToolTip(record.bars.score, 'Score: ' + record.bars['score'].value)"
                   (mouseout)="hideToolTip()"/>
           </g>
           <g>
             <rect class="timePlayingBar bar" [attr.fill]="colors['domain'][1]" [attr.y]="record.bars.timePlaying.y"
                   [attr.height]="record.bars.timePlaying.height" [attr.width]="record.bars.timePlaying.width"
                   [attr.x]="record.bars.timePlaying.x"
-                  (mouseenter)="showToolTip($event, 'timePlaying', record)"
+                  (mouseenter)="showToolTip(record.bars.timePlaying, 'Time Played: ' + record.bars['timePlaying'].value)"
                   (mouseout)="hideToolTip()"/>
           </g>
           <g>
             <rect class="faultsBar bar" [attr.fill]="colors['domain'][2]" [attr.y]="record.bars.faults.y"
                   [attr.height]="record.bars.faults.height" [attr.width]="record.bars.faults.width"
                   [attr.x]="record.bars.faults.x"
-                  (mouseenter)="showToolTip($event, 'faults', record)"
+                  (mouseenter)="showToolTip(record.bars.faults, 'Faults: ' + record.bars['faults'].value)"
                   (mouseout)="hideToolTip()"/>
           </g>
         </g>

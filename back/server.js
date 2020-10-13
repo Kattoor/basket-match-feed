@@ -1,3 +1,5 @@
+process.env.TZ = 'Europe/Brussels';
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -108,13 +110,12 @@ function getPlayers(matchGuid, cb) {
 
 }
 
-function getAllTemseMatches(cb) {
-    const temseGuid = 'BVBL1047HSE  3';
-    //const temseGuid = 'BVBL1047HSE  2'
+function getAllTemseMatches(teamGuid, cb) {
+    teamGuid = teamGuid.replace(/%20/g, ' ');
     const options = {
         host: "vblcb.wisseq.eu",
         port: 80,
-        path: '/VBLCB_WebService/data/TeamMatchesByGuid?teamGuid=' + temseGuid.replace(/ /g, '+'),
+        path: '/VBLCB_WebService/data/TeamMatchesByGuid?teamGuid=' + teamGuid.replace(/ /g, '+'),
         method: 'GET'
     };
 
@@ -143,7 +144,7 @@ function getAllTemseMatches(cb) {
                         sportsHall: m.accNaam,
                         result: m.uitslag.replace(/ /g, ''),
 
-                        enemyTeam: m.tTGUID === temseGuid ? m.tUNaam : m.tTNaam
+                        enemyTeam: m.tTGUID === teamGuid ? m.tUNaam : m.tTNaam
                     };
 
                     if (match.result) {
@@ -152,8 +153,8 @@ function getAllTemseMatches(cb) {
                         const awayScore = +resultSplit[1];
 
                         match.didWeWin =
-                            (match.homeTeam.guid === temseGuid && homeScore > awayScore) ||
-                            (match.awayTeam.guid === temseGuid && awayScore > homeScore);
+                            (match.homeTeam.guid === teamGuid && homeScore > awayScore) ||
+                            (match.awayTeam.guid === teamGuid && awayScore > homeScore);
                     }
 
                     return match;
@@ -234,23 +235,29 @@ function routeResource(request, response) {
     });
 }
 
-getAllTemseMatches(matches => {
-    console.log('Fetched all matches');
-    http.createServer((req, res) => {
-        res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
+http.createServer((req, res) => {
+    res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
 
-        const route = req.url.split('?')[0];
+    const route = req.url.split('?')[0];
 
-        if (!route.startsWith('/api')) {
-            routeResource(req, res);
-        } else {
-            switch (route) {
-                case '/api/all-matches':
+    if (!route.startsWith('/api')) {
+        routeResource(req, res);
+    } else {
+        let teamGuid;
+        switch (route) {
+            case '/api/all-matches':
+                teamGuid = req.url.split('?teamGuid=')[1];
+                getAllTemseMatches(teamGuid, matches => {
+                    console.log('Fetched all matches');
                     res.write(JSON.stringify(matches));
                     res.end();
-                    break;
-                case '/api/match':
-                    const matchGuid = req.url.split('?guid=')[1];
+                });
+                break;
+            case '/api/match':
+                teamGuid = req.url.split('teamGuid=')[1].split('&')[0];
+                const matchGuid = req.url.split('matchGuid=')[1].split('&')[0];
+                getAllTemseMatches(teamGuid, matches => {
+                    console.log('Fetched all matches');
                     getPlayers(matchGuid, playerData => {
                         console.log('Fetched teams data');
 
@@ -263,22 +270,22 @@ getAllTemseMatches(matches => {
                             res.end();
                         });
                     });
-                    break;
-                case '/api/match-metadata':
-                    const guid = req.url.split('?guid=')[1];
-                    getMatchMetaData(guid, matchMetaData => {
-                        console.log('Fetched match metadata');
+                });
+                break;
+            case '/api/match-metadata':
+                const guid = req.url.split('?guid=')[1];
+                getMatchMetaData(guid, matchMetaData => {
+                    console.log('Fetched match metadata');
 
-                        res.write(JSON.stringify(matchMetaData));
-                        res.end();
-                    });
-                    break;
-                default:
-                    break;
-            }
+                    res.write(JSON.stringify(matchMetaData));
+                    res.end();
+                });
+                break;
+            default:
+                break;
         }
-    }).listen(8081, () => console.log('Started server'));
-});
+    }
+}).listen(8081, () => console.log('Started server'));
 
 function enrich(records, playerData) {
     return records.map(record => {

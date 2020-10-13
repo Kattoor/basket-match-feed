@@ -51,8 +51,9 @@ export class SvgChartComponent {
     const barPadding = 2;
     const chartTopPadding = 20;
     const chartBottomMargin = 25;
+    const chartHorizontalMargin = 50;
 
-    const playerWidth = width / amountOfPlayers;
+    const playerWidth = (width - chartHorizontalMargin * 2) / amountOfPlayers;
 
     const amountOfBarsPerPlayer = 3;
 
@@ -68,52 +69,44 @@ export class SvgChartComponent {
 
     this.dataToDraw = this._data.map((record, i) =>
       Object.assign({}, record, {
-        x: i * playerWidth,
+        x: chartHorizontalMargin + i * playerWidth,
         width: playerWidth,
         bars: {
           score: {
             width: barWidth,
             y: this.svgHeight - record.score * yScale - chartBottomMargin,
             height: record.score * yScale,
-            x: i * playerWidth + groupPadding + barPadding,
+            x: chartHorizontalMargin + i * playerWidth + groupPadding + barPadding,
             value: record.score
           },
           timePlaying: {
             width: barWidth,
             y: this.svgHeight - record.timePlaying * yScale - chartBottomMargin,
             height: record.timePlaying * yScale,
-            x: i * playerWidth + groupPadding + barPadding + barWidth + barPadding + barPadding,
+            x: chartHorizontalMargin + i * playerWidth + groupPadding + barPadding + barWidth + barPadding + barPadding,
             value: record.timePlaying
           },
           faults: {
             width: barWidth,
             y: this.svgHeight - record.faults * yScale - chartBottomMargin,
             height: record.faults * yScale,
-            x: i * playerWidth + groupPadding + barPadding + barWidth + barPadding + barPadding + barWidth + barPadding + barPadding,
+            x: chartHorizontalMargin + i * playerWidth + groupPadding + barPadding + barWidth + barPadding + barPadding + barWidth + barPadding + barPadding,
             value: record.faults
           }
         }
       }));
   }
 
-  showToolTip(event, what, record) {
+  showToolTip(bar, text) {
     const tooltip = document.getElementById('tooltip');
-    tooltip.innerHTML = what + ': ' + record.bars[what].value;
+    tooltip.innerHTML = text;
     tooltip.style.display = 'block';
 
-    let tooltipLeft = (record.bars[what].x - ((tooltip.offsetWidth - this.barWidth) / 2));
-    const tooltipTop = record.bars[what].y - tooltip.offsetHeight - 10;
-
-    if (tooltipLeft <= 0) {
-      tooltipLeft = 1;
-    } else if (tooltipLeft + tooltip.offsetWidth >= document.body.offsetWidth) {
-      tooltipLeft = document.body.offsetWidth - tooltip.offsetWidth;
-    }
+    let tooltipLeft = (bar.x - ((tooltip.offsetWidth - this.barWidth) / 2));
+    const tooltipTop = bar.y - tooltip.offsetHeight - 10;
 
     tooltip.style.left = tooltipLeft + 'px';
     tooltip.style.top = tooltipTop + 'px';
-
-    console.log(tooltip.offsetHeight);
   }
 
   hideToolTip() {
